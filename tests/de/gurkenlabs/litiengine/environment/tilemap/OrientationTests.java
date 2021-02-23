@@ -11,6 +11,7 @@ import java.awt.Shape;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 
 public class OrientationTests {
@@ -176,6 +177,15 @@ public class OrientationTests {
     assertEquals(new Dimension(405, 847), map.getOrientation().getSize(map));
     assertEquals(new Point(60, 65), map.getOrientation().getLocation(6, 3, map));
     testOrientation(map);
+      int sum = 0;
+      for(int i = 0; i < MapOrientations.CCAE.length; ++i) {
+          if((MapOrientations.CCAE[i] != 0)) {
+              sum++;
+          } else {
+              System.out.println(i);
+          }
+      }
+      System.out.println("CC Count: " + sum);
   }
 
   private static void testOrientation(IMap map) {
@@ -188,4 +198,8 @@ public class OrientationTests {
       assertTrue(tileShape.contains(x, y));
     }
   }
+    @AfterAll
+    public static void printCCAE() {
+
+    }
 }
