@@ -33,6 +33,7 @@ import de.gurkenlabs.litiengine.entities.ICombatEntity;
 import de.gurkenlabs.litiengine.entities.Creature;
 import de.gurkenlabs.litiengine.entities.IEntity;
 import de.gurkenlabs.litiengine.entities.IMobileEntity;
+import de.gurkenlabs.litiengine.entities.SoundSource;
 import de.gurkenlabs.litiengine.entities.LightSource;
 import de.gurkenlabs.litiengine.entities.MapArea;
 import de.gurkenlabs.litiengine.entities.Prop;
@@ -108,31 +109,57 @@ public class EnvironmentTests {
     assertEquals(0, this.testEnvironment.getEntities().size());
   }
 
-  @Test
-  public void testCreatureEntity() {
+	@Test
+	public void testCreatureEntity() {
 		IEntity creature = mock(Creature.class);
 		when(creature.getMapId()).thenReturn(123);
-    when(creature.getName()).thenReturn("test");
-    when(creature.getRenderType()).thenReturn(RenderType.NORMAL);
+		when(creature.getName()).thenReturn("test");
+		when(creature.getRenderType()).thenReturn(RenderType.NORMAL);
 
 		this.testEnvironment.add(creature);
 
 		assertNotNull(this.testEnvironment.get(123));
-    assertNotNull(this.testEnvironment.getCreature(123));
-    assertNotNull(this.testEnvironment.getCreature("test"));
-    assertEquals(1, this.testEnvironment.getCombatEntities().size());
-    assertEquals(1, this.testEnvironment.getEntities(Creature.class).size());
-    assertEquals(1, this.testEnvironment.getEntities().size());
+		assertNotNull(this.testEnvironment.getCreature(123));
+		assertNotNull(this.testEnvironment.getCreature("test"));
+		assertEquals(1, this.testEnvironment.getCombatEntities().size());
+		assertEquals(1, this.testEnvironment.getEntities(Creature.class).size());
+		assertEquals(1, this.testEnvironment.getEntities().size());
 
 		this.testEnvironment.remove(creature);
 
 		assertNull(this.testEnvironment.get(123));
-    assertNull(this.testEnvironment.getCombatEntity(123));
-    assertNull(this.testEnvironment.getCombatEntity("test"));
-    assertEquals(0, this.testEnvironment.getCreatures().size());
-    assertEquals(0, this.testEnvironment.getEntities(Creature.class).size());
-    assertEquals(0, this.testEnvironment.getEntities().size());
-  }
+		assertNull(this.testEnvironment.getCombatEntity(123));
+		assertNull(this.testEnvironment.getCombatEntity("test"));
+		assertEquals(0, this.testEnvironment.getCreatures().size());
+		assertEquals(0, this.testEnvironment.getEntities(Creature.class).size());
+		assertEquals(0, this.testEnvironment.getEntities().size());
+	}
+
+	@Test
+	public void testSoundSource() {
+		IEntity soundSource = mock(SoundSource.class);
+		when(soundSource.getMapId()).thenReturn(1);
+		when(soundSource.getName()).thenReturn("Sound source");
+		when(soundSource.getRenderType()).thenReturn(RenderType.NORMAL);
+
+		this.testEnvironment.add(soundSource);
+
+		assertNotNull(this.testEnvironment.get(1));
+		assertNotNull(this.testEnvironment.getSoundSource(1));
+		assertNotNull(this.testEnvironment.getSoundSource("Sound source"));
+		assertEquals(1, this.testEnvironment.getSoundSources().size());
+		assertEquals(1, this.testEnvironment.getEntities(SoundSource.class).size());
+		assertEquals(1, this.testEnvironment.getEntities().size());
+
+		this.testEnvironment.remove(soundSource);
+
+		assertNull(this.testEnvironment.get(1));
+		assertNull(this.testEnvironment.getCombatEntity(1));
+		assertNull(this.testEnvironment.getCombatEntity("Sound source"));
+		assertEquals(0, this.testEnvironment.getSoundSources().size());
+		assertEquals(0, this.testEnvironment.getEntities(SoundSource.class).size());
+		assertEquals(0, this.testEnvironment.getEntities().size());
+	}
 
   @Test
   public void testGetByName() {
