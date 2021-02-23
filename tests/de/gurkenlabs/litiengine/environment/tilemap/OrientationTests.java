@@ -1,7 +1,6 @@
 package de.gurkenlabs.litiengine.environment.tilemap;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -12,6 +11,7 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 
 public class OrientationTests {
   @Test
@@ -176,6 +176,33 @@ public class OrientationTests {
     assertEquals(new Dimension(405, 847), map.getOrientation().getSize(map));
     assertEquals(new Point(60, 65), map.getOrientation().getLocation(6, 3, map));
     testOrientation(map);
+      map = mock(IMap.class);
+      when(map.getOrientation()).thenReturn(MapOrientations.HEXAGONAL);
+      when(map.getStaggerAxis()).thenReturn(StaggerAxis.X);
+      when(map.getStaggerIndex()).thenReturn(StaggerIndex.EVEN);
+      when(map.getTileWidth()).thenReturn(0);
+      when(map.getTileHeight()).thenReturn(0);
+      when(map.getTileSize()).thenReturn(new Dimension(10, 14));
+      when(map.getHexSideLength()).thenReturn(0); // skinny hexagons
+      when(map.getWidth()).thenReturn(40);
+      when(map.getHeight()).thenReturn(50);
+      when(map.getSizeInTiles()).thenReturn(new Dimension(40, 50));
+      boolean caught = false;
+      try {
+          map.getOrientation().getTile(0,0, map);
+      } catch (ArithmeticException e) {
+          caught = true;
+      }
+      assertTrue(caught);
+      when(map.getTileWidth()).thenReturn(3);
+      caught = false;
+      try {
+          map.getOrientation().getTile(0,0, map);
+      } catch (ArithmeticException e) {
+          caught = true;
+      }
+      assertTrue(caught);
+
   }
 
   private static void testOrientation(IMap map) {
