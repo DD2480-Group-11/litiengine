@@ -46,11 +46,11 @@ dependencies {
 }
 
 test {
-	useJUnitPlatform()
+    useJUnitPlatform()
+    testLogging.showStandardStreams = true
 
-	testLogging.showStandardStreams = true
+    testLogging {
 
-	testLogging {
         events "passed", "skipped", "failed"
         exceptionFormat "full"
     }
@@ -77,7 +77,7 @@ jar {
   exclude '**/*.dylib'
   exclude '**/*.so'
   exclude 'junit**/**'
-  
+
   manifest {
     attributes 'Main-Class': 'de.gurkenlabs.utiliti.Program'
   }
