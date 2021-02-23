@@ -19,6 +19,7 @@ import java.util.logging.Logger;
 
 public final class ReflectionUtilities {
   private static final Logger log = Logger.getLogger(ReflectionUtilities.class.getName());
+  public static int[] CCsetFieldValue = new int[15];
 
   private ReflectionUtilities() {
     throw new UnsupportedOperationException();
@@ -218,43 +219,57 @@ public final class ReflectionUtilities {
     // directly try to set the field.
     final Field field = getField(cls, fieldName);
     if (field == null) {
+      CCsetFieldValue[0] = 1;
       return false;
     }
 
     // final fields cannot be set
     if (Modifier.isFinal(field.getModifiers())) {
+      CCsetFieldValue[1] = 1;
       return false;
     }
 
     try {
       if (field.getType().equals(boolean.class)) {
+        CCsetFieldValue[2] = 1;
         return setValue(cls, instance, fieldName, Boolean.parseBoolean(value));
       } else if (field.getType().equals(int.class)) {
+        CCsetFieldValue[3] = 1;
         return setValue(cls, instance, fieldName, Integer.parseInt(value));
       } else if (field.getType().equals(float.class)) {
+        CCsetFieldValue[4] = 1;
         return setValue(cls, instance, fieldName, Float.parseFloat(value));
       } else if (field.getType().equals(double.class)) {
+        CCsetFieldValue[5] = 1;
         return setValue(cls, instance, fieldName, Double.parseDouble(value));
       } else if (field.getType().equals(short.class)) {
+        CCsetFieldValue[6] = 1;
         return setValue(cls, instance, fieldName, Short.parseShort(value));
       } else if (field.getType().equals(byte.class)) {
+        CCsetFieldValue[7] = 1;
         return setValue(cls, instance, fieldName, Byte.parseByte(value));
       } else if (field.getType().equals(long.class)) {
+        CCsetFieldValue[8] = 1;
         return setValue(cls, instance, fieldName, Long.parseLong(value));
       } else if (field.getType().equals(String.class)) {
+        CCsetFieldValue[9] = 1;
         return setValue(cls, instance, fieldName, value);
       } else if (field.getType().equals(String[].class)) {
+        CCsetFieldValue[10] = 1;
         return setValue(cls, instance, fieldName, value.split(","));
       } else if (field.getType() instanceof Class && field.getType().isEnum()) {
+        CCsetFieldValue[11] = 1;
         return setEnumPropertyValue(cls, instance, field, fieldName, value);
       } else if (field.getType().equals(Material.class)) {
+        CCsetFieldValue[12] = 1;
         return setValue(cls, instance, fieldName, Material.get(value));
       }
       // TODO: implement support for Attribute and RangeAttribute fields
     } catch (final NumberFormatException e) {
+      CCsetFieldValue[13] = 1;
       log.log(Level.SEVERE, e.getMessage(), e);
     }
-
+    CCsetFieldValue[14] = 1;
     return false;
   }
 

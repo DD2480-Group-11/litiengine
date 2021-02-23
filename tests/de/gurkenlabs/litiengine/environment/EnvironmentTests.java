@@ -592,4 +592,14 @@ public class EnvironmentTests {
 
     assertThrows(UnsupportedOperationException.class, () -> this.testEnvironment.getUsedTags().add(null));
   }
+
+  @AfterAll
+  public static void printCCAE() {
+	  int sum = 0;
+	  for(int i = 0; i < Environment.CCAE.length; ++i) {
+		  if(Environment.CCAE[i] != 0)
+			  sum++;
+	  }
+	  System.out.println("CC Count: " + sum);
+  }
 }

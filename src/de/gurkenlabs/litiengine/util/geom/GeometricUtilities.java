@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class GeometricUtilities {
+  public static int[] CCGIP = new int[4];
   private static final double RAYCAST_EPSILON = 0.01;
 
   private GeometricUtilities() {
@@ -271,24 +272,28 @@ public class GeometricUtilities {
     // Top line
     final Point2D p1 = getIntersectionPoint(line, topLine);
     if (p1 != null && contains(rectangle, p1)) {
+      CCGIP[0]=1;
       intersectionPoints.add(p1);
     }
 
     // Bottom line
     final Point2D p2 = getIntersectionPoint(line, bottomLine);
     if (p2 != null && contains(rectangle, p2) && !intersectionPoints.contains(p2)) {
+      CCGIP[1]=1;
       intersectionPoints.add(p2);
     }
 
     // Left side...
     final Point2D p3 = getIntersectionPoint(line, leftLine);
     if (p3 != null && !p3.equals(p1) && !p3.equals(p2) && contains(rectangle, p3) && !intersectionPoints.contains(p3)) {
+      CCGIP[2]=1;
       intersectionPoints.add(p3);
     }
 
     // Right side
     final Point2D p4 = getIntersectionPoint(line, rightLine);
     if (p4 != null && !p4.equals(p1) && !p4.equals(p2) && contains(rectangle, p4) && !intersectionPoints.contains(p4)) {
+      CCGIP[3]=1;
       intersectionPoints.add(p4);
     }
 

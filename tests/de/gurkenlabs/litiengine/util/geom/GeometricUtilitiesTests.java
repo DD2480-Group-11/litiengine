@@ -11,6 +11,8 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import org.junit.jupiter.api.Test;
 
+import org.junit.jupiter.api.AfterAll;
+
 public class GeometricUtilitiesTests {
 
   @Test
@@ -141,5 +143,15 @@ public class GeometricUtilitiesTests {
     
     assertEquals(-10, end4.getX(), 0.001);
     assertEquals(-10, end4.getY(), 0.001);
+  }
+  
+  @AfterAll
+  public static void printCCGIP() {
+	  int sum = 0;
+	  for(int i = 0; i < GeometricUtilities.CCGIP.length; ++i) {
+		  if(GeometricUtilities.CCGIP[i] != 0)
+			  sum++;
+	  }
+	  System.out.println("CC Count: " + sum);
   }
 }
