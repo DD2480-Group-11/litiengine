@@ -71,6 +71,9 @@ import de.gurkenlabs.litiengine.util.TimeUtilities;
 import de.gurkenlabs.litiengine.util.geom.GeometricUtilities;
 
 public final class Environment implements IRenderable {
+
+  public static int[] CCAE = new int[19]; 			//code coverage manual instrumentation for method addEntity
+
   private static final Map<String, IMapObjectLoader> mapObjectLoaders = new ConcurrentHashMap<>();
   private static final String GRAVITY_IDENTIFIER = "GRAVITY";
   private static final Logger log = Logger.getLogger(Environment.class.getName());
@@ -2598,65 +2601,82 @@ public final class Environment implements IRenderable {
     int desiredID = entity.getMapId();
     // assign local map id if the entity's mapID is invalid
     if (desiredID == 0 || this.allEntities.keySet().contains(desiredID)) {
+	  CCAE[0] = 1;
       entity.setMapId(getLocalMapId());
       log.fine(() -> String.format("Entity [%s] was assigned a local mapID because #%d was already taken or invalid.", entity, desiredID));
     }
 
     if (entity instanceof Emitter) {
+	  CCAE[1] = 1;
       Emitter emitter = (Emitter) entity;
       this.addEmitter(emitter);
     }
 
     if (entity instanceof ICombatEntity) {
+	  CCAE[2] = 1;
       this.combatEntities.put(entity.getMapId(), (ICombatEntity) entity);
     }
 
     if (entity instanceof IMobileEntity) {
+	  CCAE[3] = 1;
       this.mobileEntities.put(entity.getMapId(), (IMobileEntity) entity);
     }
 
     if (entity instanceof Prop) {
+	  CCAE[4] = 1;
       this.props.add((Prop) entity);
     }
 
     if (entity instanceof Creature) {
+	  CCAE[5] = 1;
       this.creatures.add((Creature) entity);
     }
 
     if (entity instanceof CollisionBox) {
+	  CCAE[6] = 1;
       this.colliders.add((CollisionBox) entity);
     }
 
     if (entity instanceof LightSource) {
+	  CCAE[7] = 1;
       this.lightSources.add((LightSource) entity);
     }
 
     if (entity instanceof Trigger) {
+	  CCAE[8] = 1;
       this.triggers.add((Trigger) entity);
     }
 
     if (entity instanceof Spawnpoint) {
+	  CCAE[9] = 1;
       this.spawnPoints.add((Spawnpoint) entity);
     }
     if (entity instanceof SoundSource) {
+	  CCAE[10] = 1;
       this.soundSources.add((SoundSource) entity);
     }
 
     if (entity instanceof StaticShadow) {
+	  CCAE[11] = 1;
       this.staticShadows.add((StaticShadow) entity);
     } else if (entity instanceof MapArea) {
+	  CCAE[12] = 1;
       this.mapAreas.add((MapArea) entity);
     }
 
     for (String rawTag : entity.getTags()) {
       if (rawTag == null) {
+		CCAE[13] = 1;
         continue;
       }
 
       final String tag = rawTag.trim().toLowerCase();
       if (tag.isEmpty()) {
+		CCAE[14] = 1;
         continue;
       }
+
+	  CCAE[15] = 1;
 
       this.getEntitiesByTag().computeIfAbsent(tag, t -> new CopyOnWriteArrayList<>()).add(entity);
     }
@@ -2664,8 +2684,11 @@ public final class Environment implements IRenderable {
     // if the environment has already been loaded,
     // we need to load the new entity manually
     if (this.loaded) {
+	  CCAE[16] = 1;
       this.load(entity);
     }
+
+	CCAE[17] = 1;
 
     this.allEntities.put(entity.getMapId(), entity);
   }
