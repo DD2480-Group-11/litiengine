@@ -30,6 +30,7 @@ import de.gurkenlabs.litiengine.Game;
 import de.gurkenlabs.litiengine.GameTest;
 import de.gurkenlabs.litiengine.entities.CollisionBox;
 import de.gurkenlabs.litiengine.entities.ICombatEntity;
+import de.gurkenlabs.litiengine.entities.Creature;
 import de.gurkenlabs.litiengine.entities.IEntity;
 import de.gurkenlabs.litiengine.entities.IMobileEntity;
 import de.gurkenlabs.litiengine.entities.LightSource;
@@ -104,6 +105,32 @@ public class EnvironmentTests {
     assertNull(this.testEnvironment.getCombatEntity("test"));
     assertEquals(0, this.testEnvironment.getCombatEntities().size());
     assertEquals(0, this.testEnvironment.getEntities(ICombatEntity.class).size());
+    assertEquals(0, this.testEnvironment.getEntities().size());
+  }
+
+  @Test
+  public void testCreatureEntity() {
+		IEntity creature = mock(Creature.class);
+		when(creature.getMapId()).thenReturn(123);
+    when(creature.getName()).thenReturn("test");
+    when(creature.getRenderType()).thenReturn(RenderType.NORMAL);
+
+		this.testEnvironment.add(creature);
+
+		assertNotNull(this.testEnvironment.get(123));
+    assertNotNull(this.testEnvironment.getCreature(123));
+    assertNotNull(this.testEnvironment.getCreature("test"));
+    assertEquals(1, this.testEnvironment.getCombatEntities().size());
+    assertEquals(1, this.testEnvironment.getEntities(Creature.class).size());
+    assertEquals(1, this.testEnvironment.getEntities().size());
+
+		this.testEnvironment.remove(creature);
+
+		assertNull(this.testEnvironment.get(123));
+    assertNull(this.testEnvironment.getCombatEntity(123));
+    assertNull(this.testEnvironment.getCombatEntity("test"));
+    assertEquals(0, this.testEnvironment.getCreatures().size());
+    assertEquals(0, this.testEnvironment.getEntities(Creature.class).size());
     assertEquals(0, this.testEnvironment.getEntities().size());
   }
 
