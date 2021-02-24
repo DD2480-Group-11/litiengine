@@ -106,7 +106,20 @@ public enum Direction {
       return this;
     }
   }
+  public static Direction getDirection(int name){
+    switch(name) {
+      case 0:
+        return Direction.DOWN; 
+      case 1:
+        return Direction.RIGHT; 
+      case 2:
+        return Direction.UP;
+      case 3:
+        return Direction.LEFT;
 
+    }
+    return Direction.UNDEFINED;
+  }
   /**
    * Converts this direction to the median angle of the range that is described by this direction.
    * <pre>
