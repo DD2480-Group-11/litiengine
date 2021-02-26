@@ -94,11 +94,21 @@ public class ReflectionUtilitiesTests {
     Material expected = new Material("FLESH");
   
     boolean result = ReflectionUtilities.setFieldValue(TestClass.class, tc, "materialField", "FLESH");
-    System.out.println("RESULT:" + result);
-    System.out.println("FIELD: " + tc.materialField);
-    System.out.println("Expected: " + expected);
+
     assertEquals(tc.materialField, expected);
   
+  }
+
+  @Test
+  public void testSetFieldStringArray(){
+    TestClass tc = new TestClass();
+
+    ReflectionUtilities.setFieldValue(TestClass.class, tc, "stringArrayField", "är det här content?");
+    System.out.println("tc.stringArrayfield " + tc.stringArrayField + " length: " + tc.stringArrayField.length);
+    for(int i = 0; i < tc.stringArrayField.length; i++){
+      System.out.println("content: " + tc.stringArrayField[i]);
+    }
+    assertArrayEquals(tc.stringArrayField, new String[]{});
   }
 
   /**
