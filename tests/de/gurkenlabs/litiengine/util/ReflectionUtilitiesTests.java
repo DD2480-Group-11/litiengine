@@ -99,16 +99,22 @@ public class ReflectionUtilitiesTests {
   
   }
 
+  /**
+   * Test setting the string array field.
+   */
   @Test
   public void testSetFieldStringArray(){
     TestClass tc = new TestClass();
+    String[] expected = new String[]{"apornas","bananer"};
 
-    ReflectionUtilities.setFieldValue(TestClass.class, tc, "stringArrayField", "är det här content?");
+    ReflectionUtilities.setFieldValue(TestClass.class, tc, "stringArrayField", "apornas,bananer");
+
     System.out.println("tc.stringArrayfield " + tc.stringArrayField + " length: " + tc.stringArrayField.length);
     for(int i = 0; i < tc.stringArrayField.length; i++){
       System.out.println("content: " + tc.stringArrayField[i]);
     }
-    assertArrayEquals(tc.stringArrayField, new String[]{});
+
+    assertArrayEquals(tc.stringArrayField, expected);
   }
 
   /**
