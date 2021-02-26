@@ -4,8 +4,16 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 import org.junit.jupiter.api.Test;
+
+import de.gurkenlabs.litiengine.util.geom.Vector2D;
+import java.util.Collection;
+import java.util.Collections;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+
 
 public class ReflectionUtilitiesTests {
   @Test
@@ -13,6 +21,22 @@ public class ReflectionUtilitiesTests {
     assertNotNull(ReflectionUtilities.getField(TestImpl.class, "integerField"));
     assertNotNull(ReflectionUtilities.getField(ChildImpl.class, "integerField"));
     assertNull(ReflectionUtilities.getField(TestImpl.class, "nananananan"));
+  }
+
+
+  /**
+   * Test getSetters-funktion
+   */
+  @Test
+  public void testGetSetters() {
+    Collection<Method> result =  ReflectionUtilities.getSetters(Vector2D.class);
+    Collection<Method> expected = new ArrayList<>();
+
+    Method[] a = result.toArray(new Method[result.size()]);
+    Method[] b = expected.toArray(new Method[expected.size()]);
+
+    assertArrayEquals(a, b);
+    
   }
 
   /**
