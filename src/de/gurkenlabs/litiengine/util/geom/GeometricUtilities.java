@@ -13,6 +13,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RectangularShape;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -242,7 +243,7 @@ public class GeometricUtilities {
    * @return the point2 d
    */
   public static Point2D getIntersectionPoint(final Line2D line, final Rectangle2D rectangle) {
-    final List<Point2D> intersectionPoints = getIntersectionPoints(line, rectangle);
+    final HashSet<Point2D> intersectionPoints = getIntersectionPoints(line, rectangle);
     for (final Point2D p : intersectionPoints) {
       if (p != null && !p.equals(line.getP1()) && contains(rectangle, p)) {
         return p;
@@ -260,8 +261,8 @@ public class GeometricUtilities {
    *          the rectangle
    * @return the intersection points
    */
-  public static List<Point2D> getIntersectionPoints(final Line2D line, final Rectangle2D rectangle) {
-    final ArrayList<Point2D> intersectionPoints = new ArrayList<>();
+  public static HashSet<Point2D> getIntersectionPoints(final Line2D line, final Rectangle2D rectangle) {
+    final HashSet<Point2D> intersectionPoints = new HashSet<>();
     final Line2D[] lines = getLines(rectangle);
     final Line2D topLine = lines[0];
     final Line2D bottomLine = lines[1];
@@ -270,32 +271,36 @@ public class GeometricUtilities {
 
     // Top line
     final Point2D p1 = getIntersectionPoint(line, topLine);
-    if (p1 != null && contains(rectangle, p1)) {
+    if (isIncluded(p1, rectangle)) {
       intersectionPoints.add(p1);
     }
 
     // Bottom line
     final Point2D p2 = getIntersectionPoint(line, bottomLine);
-    if (p2 != null && contains(rectangle, p2) && !intersectionPoints.contains(p2)) {
+    if (isIncluded(p2, rectangle)) {
       intersectionPoints.add(p2);
     }
 
     // Left side...
     final Point2D p3 = getIntersectionPoint(line, leftLine);
-    if (p3 != null && !p3.equals(p1) && !p3.equals(p2) && contains(rectangle, p3) && !intersectionPoints.contains(p3)) {
+    if (isIncluded(p3, rectangle)) {
       intersectionPoints.add(p3);
     }
 
     // Right side
     final Point2D p4 = getIntersectionPoint(line, rightLine);
-    if (p4 != null && !p4.equals(p1) && !p4.equals(p2) && contains(rectangle, p4) && !intersectionPoints.contains(p4)) {
+    if (isIncluded(p4, rectangle)) {
       intersectionPoints.add(p4);
     }
 
     intersectionPoints.removeAll(Collections.singleton(null));
     return intersectionPoints;
   }
-
+  public static boolean isIncluded(final Point2D point,final Rectangle2D rectangle){
+    boolean isIn = false;
+    if(point != null && contains(rectangle, point)) isIn = true;
+    return isIn;
+  }
   /**
    * Gets the lines.
    *
@@ -560,7 +565,7 @@ public class GeometricUtilities {
     final ArrayList<Point2D> resultPoints = new ArrayList<>();
 
     for (int i = 0; i < rectPoints.size(); i++) {
-      final List<Point2D> intersectionPoints = getIntersectionPoints(connectingLines[i], rectangle);
+      final HashSet<Point2D> intersectionPoints = getIntersectionPoints(connectingLines[i], rectangle);
       // If there is any intersection point which is not a corner point of the
       // rectangle the rectangle point at index i is not visible because the
       // raycast needs to pass the rectangle first.
