@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import de.gurkenlabs.litiengine.entities.Material;
 
 
 public class ReflectionUtilitiesTests {
@@ -83,6 +84,23 @@ public class ReflectionUtilitiesTests {
 
   }
 
+
+  /**
+   * Test material field
+   */
+  @Test
+  public void testSetFieldValueMaterial(){
+    TestClass tc = new TestClass();
+    Material expected = new Material("FLESH");
+  
+    boolean result = ReflectionUtilities.setFieldValue(TestClass.class, tc, "materialField", "FLESH");
+    System.out.println("RESULT:" + result);
+    System.out.println("FIELD: " + tc.materialField);
+    System.out.println("Expected: " + expected);
+    assertEquals(tc.materialField, expected);
+  
+  }
+
   /**
    * Testclass for testSetFieldValue and testBadSetFieldValue
    */
@@ -97,8 +115,11 @@ public class ReflectionUtilitiesTests {
     public long longField;
     public String stringField;
     public String[] stringArrayField;
-  
+    
     public final int finalIntField = 20;
+
+    public Vector2D vectorField;
+    public Material materialField;
   }
   
 
