@@ -2595,13 +2595,51 @@ public final class Environment implements IRenderable {
   }
 
   private void addEntity(final IEntity entity) {
+
+    handleEntityMapID(entity);
+
+    addEntityToEnvironment(entity);
+    
+    handleEntityTag(entity);
+
+    handleEntityLoading(entity);
+
+    this.allEntities.put(entity.getMapId(), entity);
+  }
+
+  private void handleEntityMapID(final IEntity entity) {
     int desiredID = entity.getMapId();
     // assign local map id if the entity's mapID is invalid
     if (desiredID == 0 || this.allEntities.keySet().contains(desiredID)) {
       entity.setMapId(getLocalMapId());
       log.fine(() -> String.format("Entity [%s] was assigned a local mapID because #%d was already taken or invalid.", entity, desiredID));
     }
+  }
 
+  private void handleEntityLoading(final IEntity entity) {
+    // if the environment has already been loaded,
+    // we need to load the new entity manually
+    if (this.loaded) {
+      this.load(entity);
+    }
+  }
+
+  private void handleEntityTag(final IEntity entity) {
+    for (String rawTag : entity.getTags()) {
+      if (rawTag == null) {
+        continue;
+      }
+
+      final String tag = rawTag.trim().toLowerCase();
+      if (tag.isEmpty()) {
+        continue;
+      }
+
+      this.getEntitiesByTag().computeIfAbsent(tag, t -> new CopyOnWriteArrayList<>()).add(entity);
+    }
+  }
+
+  private void addEntityToEnvironment(final IEntity entity) {
     if (entity instanceof Emitter) {
       Emitter emitter = (Emitter) entity;
       this.addEmitter(emitter);
@@ -2644,30 +2682,11 @@ public final class Environment implements IRenderable {
 
     if (entity instanceof StaticShadow) {
       this.staticShadows.add((StaticShadow) entity);
-    } else if (entity instanceof MapArea) {
+    }
+
+    if (entity instanceof MapArea) {
       this.mapAreas.add((MapArea) entity);
     }
-
-    for (String rawTag : entity.getTags()) {
-      if (rawTag == null) {
-        continue;
-      }
-
-      final String tag = rawTag.trim().toLowerCase();
-      if (tag.isEmpty()) {
-        continue;
-      }
-
-      this.getEntitiesByTag().computeIfAbsent(tag, t -> new CopyOnWriteArrayList<>()).add(entity);
-    }
-
-    // if the environment has already been loaded,
-    // we need to load the new entity manually
-    if (this.loaded) {
-      this.load(entity);
-    }
-
-    this.allEntities.put(entity.getMapId(), entity);
   }
 
   private void addEmitter(Emitter emitter) {
