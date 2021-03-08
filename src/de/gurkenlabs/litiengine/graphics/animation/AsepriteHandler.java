@@ -1,27 +1,25 @@
 package de.gurkenlabs.litiengine.graphics.animation;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileNotFoundException;
-import java.awt.Dimension;
-import java.awt.image.BufferedImage;
-import java.util.Set;
-import java.util.Map;
-
 import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
 import com.google.gson.JsonObject;
-
+import com.google.gson.JsonParser;
 import de.gurkenlabs.litiengine.graphics.Spritesheet;
-import de.gurkenlabs.litiengine.graphics.animation.Animation;
+
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Offers an interface to import Aseprite JSON export format.
  * Note: requires animation key frames to have same dimensions to support internal animation format.
  * */
 public class AsepriteHandler {
-
-  /** 
+    public static final String JSON = "json";
+  /**
    * Thrown to indicate error when importing Aseprite JSON format.
    * */
   public static class ImportAnimationException extends Error {
@@ -30,23 +28,22 @@ public class AsepriteHandler {
     }
   }
 
-  /** 
+  /**
    * Imports an Aseprite animation (.json + sprite sheet).
    * Note: searches for sprite sheet path through .json metadata, specifically 'image' element. This should be an absolute path in system.
    *
    * @param jsonPath path (including filename) to Aseprite JSON.
-   * 
+   *
    * @return Animation object represented by each key frame in Aseprite sprite sheet.
    * */
   public static Animation importAnimation(String jsonPath) throws FileNotFoundException, AsepriteHandler.ImportAnimationException {
-
     JsonElement rootElement = null;
     try { rootElement = getRootJsonElement(jsonPath); }
     catch(FileNotFoundException e) {
       throw new FileNotFoundException("FileNotFoundException: Could not find .json file " + jsonPath);
     }
-
     String spriteSheetPath = getSpriteSheetPath(rootElement);
+
     if(!new File(spriteSheetPath).exists())
       throw new FileNotFoundException("FileNotFoundException: Could not find sprite sheet file. " +
                                       "Expected location is 'image' in .json metadata, which evaluates to: " + spriteSheetPath);
@@ -54,16 +51,16 @@ public class AsepriteHandler {
     Dimension keyFrameDimensions = getKeyFrameDimensions(rootElement);
     if(areKeyFramesSameDimensions(rootElement, keyFrameDimensions)) {
 
-      BufferedImage image = new BufferedImage((int)keyFrameDimensions.getWidth(),
-                                              (int)keyFrameDimensions.getHeight(),
-                                              BufferedImage.TYPE_4BYTE_ABGR);
+      BufferedImage image = new BufferedImage(96,
+                                              32,
+                                              BufferedImage.TYPE_INT_ARGB);
 
       Spritesheet spriteSheet = new Spritesheet(image,
                                                 spriteSheetPath,
-                                                (int)keyFrameDimensions.getWidth(),
-                                                (int)keyFrameDimensions.getHeight());
+              32,
+              32);
 
-      return new Animation(spriteSheet, false, getKeyFrameDurations(rootElement));
+      return new Animation(spriteSheet, true, getKeyFrameDurations(rootElement));
     }
 
     throw new AsepriteHandler.ImportAnimationException("AsepriteHandler.ImportAnimationException: animation key frames require same dimensions.");
@@ -78,8 +75,8 @@ public class AsepriteHandler {
 
     File jsonFile = new File(jsonPath);
 
-    try { 
-      JsonElement rootElement = JsonParser.parseReader(new FileReader(jsonFile)); 
+    try {
+      JsonElement rootElement = JsonParser.parseReader(new FileReader(jsonFile));
       return rootElement;
     }
     catch(FileNotFoundException e) { throw e; }

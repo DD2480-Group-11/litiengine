@@ -5,7 +5,7 @@ apply plugin: 'signing'
 sourceSets {
   main.java.srcDir "src"
   main.resources.srcDir "resources"
-  
+
   test.java.srcDir "tests"
   test.resources.srcDir "tests"
 }
@@ -25,13 +25,15 @@ dependencies {
   }
 
   implementation 'com.code-disaster.steamworks4j:steamworks4j:1.8.0'
-  
-  // JAXB modules for JDK 9 or higher
+  implementation 'com.google.code.gson:gson:2.8.6'
+
+
+    // JAXB modules for JDK 9 or higher
   implementation 'javax.activation:javax.activation-api:1.2.0'
   implementation 'javax.xml.bind:jaxb-api:2.4.0-b180830.0359'
   implementation 'com.sun.xml.bind:jaxb-core:2.3.0.1'
   implementation 'com.sun.xml.bind:jaxb-impl:2.3.2'
-  
+
   testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
   testImplementation 'org.junit.jupiter:junit-jupiter-params:5.6.0'
   testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.0'
@@ -44,11 +46,11 @@ test {
 
 jar {
   from {
-    configurations.compileClasspath.collect { zipTree it } 
-  } 
-  
+    configurations.compileClasspath.collect { zipTree it }
+  }
+
   duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-  
+
   exclude 'META-INF/services/**'
   exclude 'module-info.*'
   exclude '**/*.dll'
@@ -60,7 +62,7 @@ jar {
 
 javadoc {
   options.encoding = 'UTF-8'
-  
+
   if(JavaVersion.current().isJava9Compatible()) {
     options.addBooleanOption('html5', true)
   }
@@ -74,7 +76,7 @@ java {
 task copyNativeLibs(type: Copy) {
   from(new File('lib')) { exclude '**/*.jar' }
   into new File(buildDir, 'libs')
-  
+
   from(new File('.')) { include 'LICENSE' }
   into new File(buildDir, 'libs')
 }
@@ -133,7 +135,7 @@ publishing {
       }
     }
   }
-  
+
   repositories {
     maven {
       def releasesRepoUrl = 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'

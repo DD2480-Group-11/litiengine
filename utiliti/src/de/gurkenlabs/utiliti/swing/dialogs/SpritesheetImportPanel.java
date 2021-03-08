@@ -1,35 +1,5 @@
 package de.gurkenlabs.utiliti.swing.dialogs;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Graphics2D;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.DefaultListModel;
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSpinner;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.SpinnerNumberModel;
-import javax.swing.SwingConstants;
-import javax.swing.table.DefaultTableModel;
-
 import de.gurkenlabs.litiengine.Game;
 import de.gurkenlabs.litiengine.IUpdateable;
 import de.gurkenlabs.litiengine.graphics.Spritesheet;
@@ -44,6 +14,20 @@ import de.gurkenlabs.litiengine.util.io.Codec;
 import de.gurkenlabs.litiengine.util.io.FileUtilities;
 import de.gurkenlabs.utiliti.Style;
 import de.gurkenlabs.utiliti.swing.ControlBehavior;
+
+import javax.swing.*;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @SuppressWarnings("serial")
 public class SpritesheetImportPanel extends JPanel implements IUpdateable {
@@ -136,7 +120,7 @@ public class SpritesheetImportPanel extends JPanel implements IUpdateable {
     scrollPane.setViewportView(fileList);
     add(scrollPane, BorderLayout.WEST);
 
-    labelAnimationPreview = new JLabel("");
+    labelAnimationPreview = new JLabel("asdfasdfdf");
     labelAnimationPreview.setPreferredSize(new Dimension(0, PREVIEW_SIZE));
     labelAnimationPreview.setMinimumSize(new Dimension(0, PREVIEW_SIZE));
     labelAnimationPreview.setMaximumSize(new Dimension(0, PREVIEW_SIZE));
@@ -205,7 +189,7 @@ public class SpritesheetImportPanel extends JPanel implements IUpdateable {
 
     JLabel lblKeyframes = new JLabel("keyframes:");
 
-    labelImage = new JLabel("");
+    labelImage = new JLabel("asdfasdfasdfads");
     labelImage.setHorizontalAlignment(SwingConstants.CENTER);
     labelImage.setMaximumSize(new Dimension(0, 128));
     labelImage.setMinimumSize(new Dimension(0, 128));

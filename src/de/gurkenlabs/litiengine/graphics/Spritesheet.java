@@ -1,19 +1,19 @@
 package de.gurkenlabs.litiengine.graphics;
 
-import java.awt.Point;
-import java.awt.image.BufferedImage;
-import java.awt.image.RasterFormatException;
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.logging.Logger;
-
 import de.gurkenlabs.litiengine.Game;
 import de.gurkenlabs.litiengine.resources.ImageFormat;
 import de.gurkenlabs.litiengine.resources.Resources;
 import de.gurkenlabs.litiengine.util.AlphanumComparator;
 import de.gurkenlabs.litiengine.util.Imaging;
 import de.gurkenlabs.litiengine.util.io.FileUtilities;
+
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.awt.image.RasterFormatException;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.logging.Logger;
 
 public final class Spritesheet implements Comparable<Spritesheet> {
   private static final Logger log = Logger.getLogger(Spritesheet.class.getName());
@@ -147,11 +147,6 @@ public final class Spritesheet implements Comparable<Spritesheet> {
     final Point position = this.getLocation(index, margin, spacing);
     try {
       final BufferedImage sprite = this.getImage().getSubimage(position.x, position.y, this.spriteWidth, this.spriteHeight);
-      if (Imaging.isEmpty(sprite)) {
-        emptySprites.add(index);
-        return null;
-      }
-
       this.sprites[index] = sprite;
       return sprite;
     } catch (final RasterFormatException rfe) {
