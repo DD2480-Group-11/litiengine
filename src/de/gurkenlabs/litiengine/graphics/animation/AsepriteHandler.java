@@ -1,5 +1,14 @@
 package de.gurkenlabs.litiengine.graphics.animation;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.awt.Dimension;
+import java.awt.image.BufferedImage;
+import java.util.Set;
+import java.util.Map;
+import javax.imageio.ImageIO;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -43,8 +52,9 @@ public class AsepriteHandler {
       throw new FileNotFoundException("FileNotFoundException: Could not find .json file " + jsonPath);
     }
     String spriteSheetPath = getSpriteSheetPath(rootElement);
+    File spriteSheetFile = new File(spriteSheetPath);
+    if(!spriteSheetFile.exists())
 
-    if(!new File(spriteSheetPath).exists())
       throw new FileNotFoundException("FileNotFoundException: Could not find sprite sheet file. " +
                                       "Expected location is 'image' in .json metadata, which evaluates to: " + spriteSheetPath);
 
@@ -53,7 +63,13 @@ public class AsepriteHandler {
 
       BufferedImage image = new BufferedImage(96,
                                               32,
-                                              BufferedImage.TYPE_INT_ARGB);
+                                              BufferedImage.TYPE_4BYTE_ABGR);
+
+
+      try { image = ImageIO.read(spriteSheetFile); }
+      catch(IOException e) {
+        throw new AsepriteHandler.ImportAnimationException("AsepriteHandler.ImportAnimationException: failed to write sprite sheet data.");
+      }
 
       Spritesheet spriteSheet = new Spritesheet(image,
                                                 spriteSheetPath,
