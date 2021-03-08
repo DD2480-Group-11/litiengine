@@ -27,7 +27,7 @@
  "meta": {
   "app": "http://www.aseprite.org/",
   "version": "1.1.9-dev",
-  "image": "tests/de/gurkenlabs/litiengine/graphics/animation/aseprite_test_animation/Sprite-0001-sheet.png",
+  "image": "C:\\Users\\hanne\\Documents\\GitHub\\fork\\litiengine\\tests\\de\\gurkenlabs\\litiengine\\graphics\\animation\\aseprite_test_animation\\Sprite-0001-sheet.png",
   "format": "RGBA8888",
   "size": { "w": 96, "h": 32 },
   "scale": "1",
