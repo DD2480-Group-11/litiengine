@@ -1,25 +1,19 @@
 package de.gurkenlabs.litiengine.graphics.animation;
 
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.awt.Dimension;
-import java.awt.image.BufferedImage;
-import java.util.Set;
-import java.util.Map;
-import javax.imageio.ImageIO;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 import de.gurkenlabs.litiengine.graphics.Spritesheet;
+import de.gurkenlabs.litiengine.resources.Resources;
+import de.gurkenlabs.litiengine.resources.SpritesheetResource;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -47,7 +41,7 @@ public class AsepriteHandler {
    * @return Animation object represented by each key frame in Aseprite sprite sheet.
    * */
   public static Animation importAnimation(String jsonPath) throws FileNotFoundException, AsepriteHandler.ImportAnimationException {
-    JsonElement rootElement = null;
+    JsonElement rootElement;
     try { rootElement = getRootJsonElement(jsonPath); }
     catch(FileNotFoundException e) {
       throw new FileNotFoundException("FileNotFoundException: Could not find .json file " + jsonPath);
@@ -62,9 +56,7 @@ public class AsepriteHandler {
     Dimension keyFrameDimensions = getKeyFrameDimensions(rootElement);
     if(areKeyFramesSameDimensions(rootElement, keyFrameDimensions)) {
 
-      BufferedImage image = new BufferedImage(96,
-                                              32,
-                                              BufferedImage.TYPE_4BYTE_ABGR);
+      BufferedImage image;
 
 
       try { image = ImageIO.read(spriteSheetFile); }
@@ -92,11 +84,7 @@ public class AsepriteHandler {
 
     File jsonFile = new File(jsonPath);
 
-    try {
-      JsonElement rootElement = JsonParser.parseReader(new FileReader(jsonFile));
-      return rootElement;
-    }
-    catch(FileNotFoundException e) { throw e; }
+      return JsonParser.parseReader(new FileReader(jsonFile));
   }
 
   /**
@@ -107,9 +95,8 @@ public class AsepriteHandler {
   private static String getSpriteSheetPath(JsonElement rootElement) {
 
     JsonElement metaData = rootElement.getAsJsonObject().get("meta");
-    String spriteSheetPath = metaData.getAsJsonObject().get("image").getAsString();
 
-    return spriteSheetPath;
+      return metaData.getAsJsonObject().get("image").getAsString();
   }
 
   /**
@@ -192,10 +179,8 @@ public class AsepriteHandler {
      *
      * @param spritesheetResource the animation object to export
      */
-    public String exportAnimation(SpritesheetResource spritesheetResource) {
-
-        String json = createJson(spritesheetResource);
-        return json;
+    public static String exportAnimation(SpritesheetResource spritesheetResource) {
+        return createJson(spritesheetResource);
     }
 
     /**
@@ -204,8 +189,8 @@ public class AsepriteHandler {
      * @param spritesheetResource animation object to export as json.
      * @return the json as a string.
      */
-    private String createJson(SpritesheetResource spritesheetResource) {
-        Spritesheet spritesheet = Resources.spritesheets().load(spritesheetResource);
+    private static String createJson(SpritesheetResource spritesheetResource) {
+        Spritesheet spritesheet =  Resources.spritesheets().get(spritesheetResource.getName());
         assert spritesheet != null;
         int[] keyframes = Resources.spritesheets().getCustomKeyFrameDurations(spritesheet);
         Frames[] frames = new Frames[keyframes.length];
@@ -224,19 +209,19 @@ public class AsepriteHandler {
             for (int j = 0; j < numCol; j++) {
                 final int row = i;
                 final int col = j;
-                Map<String, Integer> frame = new HashMap<>() {{
+                Map<String, Integer> frame = new HashMap<String, Integer>() {{
                     put("x", (0 + col * frameWidth));
                     put("y", (0 + row * frameHeight));
                     put("w", frameWidth);
                     put("h", frameHeight);
                 }};
-                Map<String, Integer> spriteSourceSize = new HashMap<>() {{
+                Map<String, Integer> spriteSourceSize = new HashMap<String, Integer>() {{
                     put("x", 0);
                     put("y", 0);
                     put("w", frameWidth);
                     put("h", frameHeight);
                 }};
-                Map<String, Integer> sourceSize = new HashMap<>() {{
+                Map<String, Integer> sourceSize = new HashMap<String, Integer>() {{
                     put("w", frameWidth);
                     put("h", frameHeight);
                 }};
@@ -255,7 +240,7 @@ public class AsepriteHandler {
         // Build the meta object in the json
         int spritesheetWidth = frameWidth * numCol;
         int spritesheetHeight = frameHeight * numRows;
-        Map<String, Integer> size = new HashMap<>() {{
+        Map<String, Integer> size = new HashMap<String, Integer>() {{
             put("w", spritesheetWidth);
             put("h", spritesheetHeight);
         }};
@@ -271,9 +256,9 @@ public class AsepriteHandler {
         StringBuilder sb = new StringBuilder();
 
         sb.append("{ \"frames\": {\n");
-        for (int i = 0; i < frames.length; i++) {
-            String json = gson.toJson(frames[i]);
-            sb.append(" \"" + frames[i].name + "\": ").append(json).append(",\n");
+        for (Frames frame : frames) {
+            String json = gson.toJson(frame);
+            sb.append(" \"").append(frame.name).append("\": ").append(json).append(",\n");
         }
         sb.append(" },\n");
         String json = gson.toJson(meta);
@@ -285,7 +270,7 @@ public class AsepriteHandler {
     /**
      * Frames class for Aseprite json structure.
      */
-    private class Frames {
+    private static class Frames {
         transient String name;
         Map<String, Integer> frame;
         boolean rotated;
@@ -317,7 +302,7 @@ public class AsepriteHandler {
     /**
      * Meta data class for Aseprite json structure.
      */
-    private class Meta {
+    private static class Meta {
         String app;
         String version;
         String image;
@@ -349,7 +334,7 @@ public class AsepriteHandler {
     /**
      * Layer class for Aseprite json structure.
      */
-    private class Layer {
+    private static class Layer {
         String name;
         int opacity;
         String blendMode;
