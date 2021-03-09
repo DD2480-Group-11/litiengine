@@ -1,33 +1,15 @@
 package de.gurkenlabs.utiliti.swing;
 
-import de.gurkenlabs.litiengine.Game;
-import de.gurkenlabs.litiengine.environment.EmitterMapObjectLoader;
-import de.gurkenlabs.litiengine.environment.tilemap.IMapObject;
-import de.gurkenlabs.litiengine.environment.tilemap.MapObjectProperty;
-import de.gurkenlabs.litiengine.environment.tilemap.MapObjectType;
-import de.gurkenlabs.litiengine.environment.tilemap.xml.Blueprint;
-import de.gurkenlabs.litiengine.environment.tilemap.xml.MapObject;
-import de.gurkenlabs.litiengine.environment.tilemap.xml.Tileset;
-import de.gurkenlabs.litiengine.graphics.Spritesheet;
-import de.gurkenlabs.litiengine.graphics.emitters.xml.EmitterData;
-import de.gurkenlabs.litiengine.resources.*;
-import de.gurkenlabs.litiengine.util.io.Codec;
-import de.gurkenlabs.litiengine.util.io.FileUtilities;
-import de.gurkenlabs.litiengine.util.io.ImageSerializer;
-import de.gurkenlabs.litiengine.util.io.XmlUtilities;
-import de.gurkenlabs.utiliti.UndoManager;
-import de.gurkenlabs.utiliti.components.Editor;
-import de.gurkenlabs.utiliti.swing.dialogs.SpritesheetImportPanel;
-import de.gurkenlabs.utiliti.swing.dialogs.XmlExportDialog;
-import de.gurkenlabs.utiliti.swing.panels.CreaturePanel;
-import de.gurkenlabs.utiliti.swing.panels.PropPanel;
-
-import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.filechooser.FileFilter;
-import javax.swing.filechooser.FileNameExtensionFilter;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -38,6 +20,48 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
+import javax.swing.Icon;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.KeyStroke;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.border.Border;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
+
+import de.gurkenlabs.litiengine.Game;
+import de.gurkenlabs.litiengine.environment.EmitterMapObjectLoader;
+import de.gurkenlabs.litiengine.environment.tilemap.IMapObject;
+import de.gurkenlabs.litiengine.environment.tilemap.MapObjectProperty;
+import de.gurkenlabs.litiengine.environment.tilemap.MapObjectType;
+import de.gurkenlabs.litiengine.environment.tilemap.xml.Blueprint;
+import de.gurkenlabs.litiengine.environment.tilemap.xml.MapObject;
+import de.gurkenlabs.litiengine.environment.tilemap.xml.Tileset;
+import de.gurkenlabs.litiengine.graphics.Spritesheet;
+import de.gurkenlabs.litiengine.graphics.emitters.xml.EmitterData;
+import de.gurkenlabs.litiengine.resources.ImageFormat;
+import de.gurkenlabs.litiengine.resources.Resources;
+import de.gurkenlabs.litiengine.resources.SoundFormat;
+import de.gurkenlabs.litiengine.resources.SoundResource;
+import de.gurkenlabs.litiengine.resources.SpritesheetResource;
+import de.gurkenlabs.litiengine.util.io.Codec;
+import de.gurkenlabs.litiengine.util.io.ImageSerializer;
+import de.gurkenlabs.utiliti.UndoManager;
+import de.gurkenlabs.utiliti.components.Editor;
+import de.gurkenlabs.utiliti.swing.dialogs.SpritesheetImportPanel;
+import de.gurkenlabs.utiliti.swing.dialogs.XmlExportDialog;
+import de.gurkenlabs.utiliti.swing.panels.CreaturePanel;
+import de.gurkenlabs.utiliti.swing.panels.PropPanel;
 
 @SuppressWarnings("serial")
 public class AssetPanelItem extends JPanel {
@@ -451,7 +475,6 @@ public class AssetPanelItem extends JPanel {
                     log.log(Level.INFO, "Exported {0} {1} to {2}", new Object[] { "Spritesheet", spriteSheetInfo.getName(), newFile });
                 }
                 break;
-
             }
         }
       } catch (IOException e) {
@@ -459,8 +482,6 @@ public class AssetPanelItem extends JPanel {
       }
     }
   }
-
-
 
   private void exportTileset() {
     if (!(this.getOrigin() instanceof Tileset)) {

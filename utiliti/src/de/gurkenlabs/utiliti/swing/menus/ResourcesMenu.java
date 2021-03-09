@@ -1,11 +1,15 @@
 package de.gurkenlabs.utiliti.swing.menus;
 
-import de.gurkenlabs.litiengine.resources.Resources;
-import de.gurkenlabs.utiliti.components.Editor;
-
-import javax.swing.*;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.KeyStroke;
+
+import de.gurkenlabs.litiengine.resources.Resources;
+import de.gurkenlabs.utiliti.components.Editor;
 
 @SuppressWarnings("serial")
 public final class ResourcesMenu extends JMenu {
@@ -25,23 +29,23 @@ public final class ResourcesMenu extends JMenu {
     JMenuItem importSprite = new JMenuItem(Resources.strings().get("menu_assets_importSprite"));
     importSprite.addActionListener(a -> Editor.instance().importSpriteSheets());
     importSprite.setEnabled(false);
-
+    
     JMenuItem importTextureAtlas = new JMenuItem(Resources.strings().get("menu_assets_importTextureAtlas"));
     importTextureAtlas.addActionListener(a -> Editor.instance().importTextureAtlas());
     importTextureAtlas.setEnabled(false);
-
+    
     JMenuItem importEmitters = new JMenuItem(Resources.strings().get("menu_assets_importEmitters"));
     importEmitters.addActionListener(a -> Editor.instance().importEmitters());
     importEmitters.setEnabled(false);
-
+    
     JMenuItem importBlueprints = new JMenuItem(Resources.strings().get("menu_assets_importBlueprints"));
     importBlueprints.addActionListener(a -> Editor.instance().importBlueprints());
     importBlueprints.setEnabled(false);
-
+    
     JMenuItem importTilesets = new JMenuItem(Resources.strings().get("menu_assets_importTilesets"));
     importTilesets.addActionListener(a -> Editor.instance().importTilesets());
     importTilesets.setEnabled(false);
-
+    
     JMenuItem importSounds = new JMenuItem(Resources.strings().get("menu_assets_importSounds"));
     importSounds.addActionListener(a -> Editor.instance().importSounds());
     importSounds.setEnabled(false);
