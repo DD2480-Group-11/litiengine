@@ -20,148 +20,145 @@ import java.util.Set;
 /**
  * Offers an interface to import Aseprite JSON export format.
  * Note: requires animation key frames to have same dimensions to support internal animation format.
- * */
+ */
 public class AsepriteHandler {
     public static final String JSON = "json";
-  /**
-   * Thrown to indicate error when importing Aseprite JSON format.
-   * */
-  public static class ImportAnimationException extends Error {
-    public ImportAnimationException(String message) {
-      super(message);
-    }
-  }
 
-  /**
-   * Imports an Aseprite animation (.json + sprite sheet).
-   * Note: searches for sprite sheet path through .json metadata, specifically 'image' element. This should be an absolute path in system.
-   *
-   * @param jsonPath path (including filename) to Aseprite JSON.
-   *
-   * @return Animation object represented by each key frame in Aseprite sprite sheet.
-   * */
-  public static Animation importAnimation(String jsonPath) throws FileNotFoundException, AsepriteHandler.ImportAnimationException {
-    JsonElement rootElement;
-    try { rootElement = getRootJsonElement(jsonPath); }
-    catch(FileNotFoundException e) {
-      throw new FileNotFoundException("FileNotFoundException: Could not find .json file " + jsonPath);
-    }
-    String spriteSheetPath = getSpriteSheetPath(rootElement);
-    File spriteSheetFile = new File(spriteSheetPath);
-    if(!spriteSheetFile.exists())
-
-      throw new FileNotFoundException("FileNotFoundException: Could not find sprite sheet file. " +
-                                      "Expected location is 'image' in .json metadata, which evaluates to: " + spriteSheetPath);
-
-    Dimension keyFrameDimensions = getKeyFrameDimensions(rootElement);
-    if(areKeyFramesSameDimensions(rootElement, keyFrameDimensions)) {
-
-      BufferedImage image;
-
-
-      try { image = ImageIO.read(spriteSheetFile); }
-      catch(IOException e) {
-        throw new AsepriteHandler.ImportAnimationException("AsepriteHandler.ImportAnimationException: failed to write sprite sheet data.");
-      }
-
-      Spritesheet spriteSheet = new Spritesheet(image,
-                                                spriteSheetPath,
-              32,
-              32);
-
-      return new Animation(spriteSheet, true, getKeyFrameDurations(rootElement));
+    /**
+     * Thrown to indicate error when importing Aseprite JSON format.
+     */
+    public static class ImportAnimationException extends Error {
+        public ImportAnimationException(String message) {
+            super(message);
+        }
     }
 
-    throw new AsepriteHandler.ImportAnimationException("AsepriteHandler.ImportAnimationException: animation key frames require same dimensions.");
-  }
+    /**
+     * Imports an Aseprite animation (.json + sprite sheet).
+     * Note: searches for sprite sheet path through .json metadata, specifically 'image' element. This should be an absolute path in system.
+     *
+     * @param jsonPath path (including filename) to Aseprite JSON.
+     * @return Animation object represented by each key frame in Aseprite sprite sheet.
+     */
+    public static Animation importAnimation(String jsonPath) throws FileNotFoundException, AsepriteHandler.ImportAnimationException {
+        JsonElement rootElement;
+        try {
+            rootElement = getRootJsonElement(jsonPath);
+        } catch (FileNotFoundException e) {
+            throw new FileNotFoundException("FileNotFoundException: Could not find .json file " + jsonPath);
+        }
+        String spriteSheetPath = getSpriteSheetPath(rootElement);
+        File spriteSheetFile = new File(spriteSheetPath);
+        if (!spriteSheetFile.exists())
 
-  /**
-   * @param jsonPath path (including filename) to Aseprite .json file.
-   *
-   * @return root element of JSON data.
-   * */
-  private static JsonElement getRootJsonElement(String jsonPath) throws FileNotFoundException {
+            throw new FileNotFoundException("FileNotFoundException: Could not find sprite sheet file. " +
+                    "Expected location is 'image' in .json metadata, which evaluates to: " + spriteSheetPath);
 
-    File jsonFile = new File(jsonPath);
+        Dimension keyFrameDimensions = getKeyFrameDimensions(rootElement);
+        if (areKeyFramesSameDimensions(rootElement, keyFrameDimensions)) {
 
-      return JsonParser.parseReader(new FileReader(jsonFile));
-  }
+            BufferedImage image;
 
-  /**
-   * @param rootElement root element of JSON data.
-   *
-   * @return path (including filename) to animation sprite sheet.
-   * */
-  private static String getSpriteSheetPath(JsonElement rootElement) {
 
-    JsonElement metaData = rootElement.getAsJsonObject().get("meta");
+            try {
+                image = ImageIO.read(spriteSheetFile);
+            } catch (IOException e) {
+                throw new AsepriteHandler.ImportAnimationException("AsepriteHandler.ImportAnimationException: failed to write sprite sheet data.");
+            }
 
-      return metaData.getAsJsonObject().get("image").getAsString();
-  }
+            Spritesheet spriteSheet = new Spritesheet(image,
+                    spriteSheetPath,
+                    32,
+                    32);
 
-  /**
-   * @param rootElement root element of JSON data.
-   *
-   * @return dimensions of first key frame.
-   * */
-  private static Dimension getKeyFrameDimensions(JsonElement rootElement) {
+            return new Animation(spriteSheet, true, getKeyFrameDurations(rootElement));
+        }
 
-    JsonElement frames = rootElement.getAsJsonObject().get("frames");
-
-    JsonObject firstFrameObject = frames.getAsJsonObject().entrySet().iterator().next().getValue().getAsJsonObject();
-    JsonObject frameDimensions = firstFrameObject.get("sourceSize").getAsJsonObject();
-
-    int frameWidth = frameDimensions.get("w").getAsInt();
-    int frameHeight = frameDimensions.get("h").getAsInt();
-
-    return new Dimension(frameWidth, frameHeight);
-  }
-
-  /**
-   * @param rootElement root element of JSON data.
-   * @param expected expected dimensions of each key frame.
-   *
-   * @return true if key frames have same duration.
-   * */
-  private static boolean areKeyFramesSameDimensions(JsonElement rootElement, Dimension expected) {
-
-    JsonElement frames = rootElement.getAsJsonObject().get("frames");
-
-    for(Map.Entry<String, JsonElement> entry : frames.getAsJsonObject().entrySet()) {
-      JsonObject frameObject = entry.getValue().getAsJsonObject();
-      JsonObject frameDimensions = frameObject.get("sourceSize").getAsJsonObject();
-
-      int frameWidth = frameDimensions.get("w").getAsInt();
-      int frameHeight = frameDimensions.get("h").getAsInt();
-
-      if(frameWidth != expected.getWidth() || frameHeight != expected.getHeight())
-        return false;
+        throw new AsepriteHandler.ImportAnimationException("AsepriteHandler.ImportAnimationException: animation key frames require same dimensions.");
     }
 
-    return true;
-  }
+    /**
+     * @param jsonPath path (including filename) to Aseprite .json file.
+     * @return root element of JSON data.
+     */
+    private static JsonElement getRootJsonElement(String jsonPath) throws FileNotFoundException {
 
-  /**
-   * @param rootElement root element of JSON data.
-   *
-   * @return integer array representing duration of each key frame.
-   * */
-  public static int[] getKeyFrameDurations(JsonElement rootElement) {
+        File jsonFile = new File(jsonPath);
 
-    JsonElement frames = rootElement.getAsJsonObject().get("frames");
-
-    Set<Map.Entry<String, JsonElement>> keyFrameSet = frames.getAsJsonObject().entrySet();
-
-    int[] keyFrameDurations = new int[keyFrameSet.size()];
-
-    int frameIndex = 0;
-    for(Map.Entry<String, JsonElement> entry : keyFrameSet) {
-      JsonObject frameObject = entry.getValue().getAsJsonObject();
-      int frameDuration = frameObject.get("duration").getAsInt();
-      keyFrameDurations[frameIndex++] = frameDuration;
+        return JsonParser.parseReader(new FileReader(jsonFile));
     }
+
+    /**
+     * @param rootElement root element of JSON data.
+     * @return path (including filename) to animation sprite sheet.
+     */
+    private static String getSpriteSheetPath(JsonElement rootElement) {
+
+        JsonElement metaData = rootElement.getAsJsonObject().get("meta");
+
+        return metaData.getAsJsonObject().get("image").getAsString();
+    }
+
+    /**
+     * @param rootElement root element of JSON data.
+     * @return dimensions of first key frame.
+     */
+    private static Dimension getKeyFrameDimensions(JsonElement rootElement) {
+
+        JsonElement frames = rootElement.getAsJsonObject().get("frames");
+
+        JsonObject firstFrameObject = frames.getAsJsonObject().entrySet().iterator().next().getValue().getAsJsonObject();
+        JsonObject frameDimensions = firstFrameObject.get("sourceSize").getAsJsonObject();
+
+        int frameWidth = frameDimensions.get("w").getAsInt();
+        int frameHeight = frameDimensions.get("h").getAsInt();
+
+        return new Dimension(frameWidth, frameHeight);
+    }
+
+    /**
+     * @param rootElement root element of JSON data.
+     * @param expected    expected dimensions of each key frame.
+     * @return true if key frames have same duration.
+     */
+    private static boolean areKeyFramesSameDimensions(JsonElement rootElement, Dimension expected) {
+
+        JsonElement frames = rootElement.getAsJsonObject().get("frames");
+
+        for (Map.Entry<String, JsonElement> entry : frames.getAsJsonObject().entrySet()) {
+            JsonObject frameObject = entry.getValue().getAsJsonObject();
+            JsonObject frameDimensions = frameObject.get("sourceSize").getAsJsonObject();
+
+            int frameWidth = frameDimensions.get("w").getAsInt();
+            int frameHeight = frameDimensions.get("h").getAsInt();
+
+            if (frameWidth != expected.getWidth() || frameHeight != expected.getHeight())
+                return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @param rootElement root element of JSON data.
+     * @return integer array representing duration of each key frame.
+     */
+    public static int[] getKeyFrameDurations(JsonElement rootElement) {
+
+        JsonElement frames = rootElement.getAsJsonObject().get("frames");
+
+        Set<Map.Entry<String, JsonElement>> keyFrameSet = frames.getAsJsonObject().entrySet();
+
+        int[] keyFrameDurations = new int[keyFrameSet.size()];
+
+        int frameIndex = 0;
+        for (Map.Entry<String, JsonElement> entry : keyFrameSet) {
+            JsonObject frameObject = entry.getValue().getAsJsonObject();
+            int frameDuration = frameObject.get("duration").getAsInt();
+            keyFrameDurations[frameIndex++] = frameDuration;
+        }
         return keyFrameDurations;
-  }
+    }
 
 
     /**
@@ -190,7 +187,7 @@ public class AsepriteHandler {
      * @return the json as a string.
      */
     private static String createJson(SpritesheetResource spritesheetResource) {
-        Spritesheet spritesheet =  Resources.spritesheets().get(spritesheetResource.getName());
+        Spritesheet spritesheet = Resources.spritesheets().get(spritesheetResource.getName());
         assert spritesheet != null;
         int[] keyframes = Resources.spritesheets().getCustomKeyFrameDurations(spritesheet);
         Frames[] frames = new Frames[keyframes.length];
