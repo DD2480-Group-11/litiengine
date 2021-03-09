@@ -480,7 +480,10 @@ public class Editor extends Screen {
     public void processAnimation(File file) {
         try {
             Animation animation = AsepriteHandler.importAnimation(file.getAbsolutePath());
-            Collection<SpritesheetResource> sprites = new ArrayList<>(Collections.singleton(new SpritesheetResource(animation.getSpritesheet())));
+            int[] keyFrames = animation.getKeyFrameDurations();
+            SpritesheetResource spritesheetResource = new SpritesheetResource(animation.getSpritesheet());
+            spritesheetResource.setKeyframes(keyFrames);
+            Collection<SpritesheetResource> sprites = new ArrayList<>(Collections.singleton(spritesheetResource));
             for (SpritesheetResource info : sprites) {
                 Resources.spritesheets().getAll().removeIf(x -> x.getName().equals(info.getName() + "-preview"));
                 this.getGameFile().getSpriteSheets().removeIf(x -> x.getName().equals(info.getName()));
