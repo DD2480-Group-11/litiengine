@@ -431,7 +431,7 @@ public class AssetPanelItem extends JPanel {
 
       ImageFormat format = sprite.getImageFormat() != ImageFormat.UNSUPPORTED ? sprite.getImageFormat() : ImageFormat.PNG;
 
-      Object[] options = { ".xml", format.toFileExtension() };
+      Object[] options = { ".xml", format.toFileExtension(), ".json"};
       int answer = JOptionPane.showOptionDialog(Game.window().getRenderComponent(), "Select an export format:", "Export Spritesheet", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
 
       try {
@@ -441,19 +441,41 @@ public class AssetPanelItem extends JPanel {
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         chooser.setDialogType(JFileChooser.SAVE_DIALOG);
         chooser.setDialogTitle("Export Spritesheet");
-        if (answer == 0) {
-          XmlExportDialog.export(spriteSheetInfo, "Spritesheet", spriteSheetInfo.getName());
-        } else if (answer == 1) {
-          FileFilter filter = new FileNameExtensionFilter(format.toString() + " - Image", format.toString());
-          chooser.setFileFilter(filter);
-          chooser.addChoosableFileFilter(filter);
-          chooser.setSelectedFile(new File(spriteSheetInfo.getName() + format.toFileExtension()));
+        switch (answer) {
+            case 0: {
+                XmlExportDialog.export(spriteSheetInfo, "Spritesheet", spriteSheetInfo.getName());
+                break;
+            }
+            case 1: {
+                FileFilter filter = new FileNameExtensionFilter(format.toString() + " - Image", format.toString());
+                chooser.setFileFilter(filter);
+                chooser.addChoosableFileFilter(filter);
+                chooser.setSelectedFile(new File(spriteSheetInfo.getName() + format.toFileExtension()));
 
-          int result = chooser.showSaveDialog(Game.window().getRenderComponent());
-          if (result == JFileChooser.APPROVE_OPTION) {
-            ImageSerializer.saveImage(chooser.getSelectedFile().toString(), sprite.getImage(), format);
-            log.log(Level.INFO, "exported spritesheet {0} to {1}", new Object[] { spriteSheetInfo.getName(), chooser.getSelectedFile() });
-          }
+                int result = chooser.showSaveDialog(Game.window().getRenderComponent());
+                if (result == JFileChooser.APPROVE_OPTION) {
+                    ImageSerializer.saveImage(chooser.getSelectedFile().toString(), sprite.getImage(), format);
+                    log.log(Level.INFO, "exported spritesheet {0} to {1}", new Object[] { spriteSheetInfo.getName(), chooser.getSelectedFile() });
+                }
+                break;
+            }
+            case 2: {
+                FileFilter filter = new FileNameExtensionFilter(".json"  + " - " + "Spritesheet" + " JSON", "json");
+                chooser.setFileFilter(filter);
+                chooser.addChoosableFileFilter(filter);
+                chooser.setSelectedFile(new File(spriteSheetInfo.getName() + "." + "json"));
+
+                int result = chooser.showSaveDialog(Game.window().getRenderComponent());
+                if (result == JFileChooser.APPROVE_OPTION) {
+
+                    
+                    File newFile = XmlUtilities.save(object, chooser.getSelectedFile().toString(), extension);
+                    String dir = FileUtilities.getParentDirPath(newFile.getAbsolutePath());
+                    consumer.accept(dir);
+                    log.log(Level.INFO, "Exported {0} {1} to {2}", new Object[] { "Spritesheet", spriteSheetInfo.getName(), newFile });
+                }
+                break;
+            }
         }
       } catch (IOException e) {
         log.log(Level.SEVERE, e.getMessage(), e);
