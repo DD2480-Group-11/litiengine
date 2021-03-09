@@ -15,8 +15,6 @@ import de.gurkenlabs.litiengine.util.AlphanumComparator;
 import de.gurkenlabs.litiengine.util.Imaging;
 import de.gurkenlabs.litiengine.util.io.FileUtilities;
 
-
-
 public final class Spritesheet implements Comparable<Spritesheet> {
   private static final Logger log = Logger.getLogger(Spritesheet.class.getName());
 
@@ -149,12 +147,12 @@ public final class Spritesheet implements Comparable<Spritesheet> {
     final Point position = this.getLocation(index, margin, spacing);
     try {
       final BufferedImage sprite = this.getImage().getSubimage(position.x, position.y, this.spriteWidth, this.spriteHeight);
-        if (Imaging.isEmpty(sprite)) {
-            emptySprites.add(index);
-            return null;
-        }
+      if (Imaging.isEmpty(sprite)) {
+        emptySprites.add(index);
+        return null;
+      }
 
-        this.sprites[index] = sprite;
+      this.sprites[index] = sprite;
       return sprite;
     } catch (final RasterFormatException rfe) {
       log.warning("could not read sprite of size [" + this.spriteWidth + "x" + this.spriteHeight + " at position [" + position.x + "," + position.y + "] from sprite'" + this.getName() + "'");
