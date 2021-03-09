@@ -387,7 +387,6 @@ public class Editor extends Screen {
     public void importAnimation() {
         if (EditorFileChooser.showFileDialog(ANIMATION_FILE_NAME, Resources.strings().get(IMPORT_DIALOGUE, ANIMATION_FILE_NAME), false, AsepriteHandler.JSON) == JFileChooser.APPROVE_OPTION) {
             this.processAnimation(EditorFileChooser.instance().getSelectedFile());
-
         }
     }
 

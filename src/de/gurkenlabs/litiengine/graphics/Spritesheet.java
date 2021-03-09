@@ -147,7 +147,12 @@ public final class Spritesheet implements Comparable<Spritesheet> {
     final Point position = this.getLocation(index, margin, spacing);
     try {
       final BufferedImage sprite = this.getImage().getSubimage(position.x, position.y, this.spriteWidth, this.spriteHeight);
-      this.sprites[index] = sprite;
+        if (Imaging.isEmpty(sprite)) {
+            emptySprites.add(index);
+            return null;
+        }
+
+        this.sprites[index] = sprite;
       return sprite;
     } catch (final RasterFormatException rfe) {
       log.warning("could not read sprite of size [" + this.spriteWidth + "x" + this.spriteHeight + " at position [" + position.x + "," + position.y + "] from sprite'" + this.getName() + "'");
