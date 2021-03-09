@@ -381,10 +381,13 @@ public class Editor extends Screen {
         }
     }
 
+    /**
+     *
+     */
     public void importAnimation() {
         if (EditorFileChooser.showFileDialog(ANIMATION_FILE_NAME, Resources.strings().get(IMPORT_DIALOGUE, ANIMATION_FILE_NAME), false, AsepriteHandler.JSON) == JFileChooser.APPROVE_OPTION) {
-            Animation animation = this.processAnimation(EditorFileChooser.instance().getSelectedFile());
-            AnimationPreview Preview = new AnimationPreview(animation);
+            this.processAnimation(EditorFileChooser.instance().getSelectedFile());
+
         }
     }
 
@@ -471,10 +474,13 @@ public class Editor extends Screen {
         this.processSpritesheets(spritePanel);
     }
 
-    public Animation processAnimation(File file) {
+    /**
+     * Loads an animation (spritesheet with keyframes) in to the editor
+     * @param file - a json file, encoded by the asesprite export standard
+     */
+    public void processAnimation(File file) {
         try {
             Animation animation = AsepriteHandler.importAnimation(file.getAbsolutePath());
-
             Collection<SpritesheetResource> sprites = new ArrayList<>(Collections.singleton(new SpritesheetResource(animation.getSpritesheet())));
             for (SpritesheetResource info : sprites) {
                 Resources.spritesheets().getAll().removeIf(x -> x.getName().equals(info.getName() + "-preview"));
@@ -483,12 +489,10 @@ public class Editor extends Screen {
                 log.log(Level.INFO, "imported spritesheet {0}", new Object[]{info.getName()});
             }
             this.loadSpriteSheets(sprites, true);
-            return animation;
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        return null;
     }
 
     private void processSpritesheets(SpritesheetImportPanel spritePanel) {

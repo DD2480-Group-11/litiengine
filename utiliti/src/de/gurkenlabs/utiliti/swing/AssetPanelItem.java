@@ -1,44 +1,5 @@
 package de.gurkenlabs.utiliti.swing;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.swing.AbstractAction;
-import javax.swing.BorderFactory;
-import javax.swing.Icon;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import javax.swing.KeyStroke;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.border.Border;
-import javax.swing.filechooser.FileFilter;
-import javax.swing.filechooser.FileNameExtensionFilter;
-
 import de.gurkenlabs.litiengine.Game;
 import de.gurkenlabs.litiengine.environment.EmitterMapObjectLoader;
 import de.gurkenlabs.litiengine.environment.tilemap.IMapObject;
@@ -49,19 +10,34 @@ import de.gurkenlabs.litiengine.environment.tilemap.xml.MapObject;
 import de.gurkenlabs.litiengine.environment.tilemap.xml.Tileset;
 import de.gurkenlabs.litiengine.graphics.Spritesheet;
 import de.gurkenlabs.litiengine.graphics.emitters.xml.EmitterData;
-import de.gurkenlabs.litiengine.resources.ImageFormat;
-import de.gurkenlabs.litiengine.resources.Resources;
-import de.gurkenlabs.litiengine.resources.SoundFormat;
-import de.gurkenlabs.litiengine.resources.SoundResource;
-import de.gurkenlabs.litiengine.resources.SpritesheetResource;
+import de.gurkenlabs.litiengine.resources.*;
 import de.gurkenlabs.litiengine.util.io.Codec;
+import de.gurkenlabs.litiengine.util.io.FileUtilities;
 import de.gurkenlabs.litiengine.util.io.ImageSerializer;
+import de.gurkenlabs.litiengine.util.io.XmlUtilities;
 import de.gurkenlabs.utiliti.UndoManager;
 import de.gurkenlabs.utiliti.components.Editor;
 import de.gurkenlabs.utiliti.swing.dialogs.SpritesheetImportPanel;
 import de.gurkenlabs.utiliti.swing.dialogs.XmlExportDialog;
 import de.gurkenlabs.utiliti.swing.panels.CreaturePanel;
 import de.gurkenlabs.utiliti.swing.panels.PropPanel;
+
+import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @SuppressWarnings("serial")
 public class AssetPanelItem extends JPanel {
@@ -431,7 +407,7 @@ public class AssetPanelItem extends JPanel {
 
       ImageFormat format = sprite.getImageFormat() != ImageFormat.UNSUPPORTED ? sprite.getImageFormat() : ImageFormat.PNG;
 
-      Object[] options = { ".xml", format.toFileExtension() };
+      Object[] options = { ".xml", format.toFileExtension(), ".json"};
       int answer = JOptionPane.showOptionDialog(Game.window().getRenderComponent(), "Select an export format:", "Export Spritesheet", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
 
       try {
@@ -441,25 +417,50 @@ public class AssetPanelItem extends JPanel {
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         chooser.setDialogType(JFileChooser.SAVE_DIALOG);
         chooser.setDialogTitle("Export Spritesheet");
-        if (answer == 0) {
-          XmlExportDialog.export(spriteSheetInfo, "Spritesheet", spriteSheetInfo.getName());
-        } else if (answer == 1) {
-          FileFilter filter = new FileNameExtensionFilter(format.toString() + " - Image", format.toString());
-          chooser.setFileFilter(filter);
-          chooser.addChoosableFileFilter(filter);
-          chooser.setSelectedFile(new File(spriteSheetInfo.getName() + format.toFileExtension()));
+        switch (answer) {
+            case 0: {
+                XmlExportDialog.export(spriteSheetInfo, "Spritesheet", spriteSheetInfo.getName());
+                break;
+            }
+            case 1: {
+                FileFilter filter = new FileNameExtensionFilter(format.toString() + " - Image", format.toString());
+                chooser.setFileFilter(filter);
+                chooser.addChoosableFileFilter(filter);
+                chooser.setSelectedFile(new File(spriteSheetInfo.getName() + format.toFileExtension()));
 
-          int result = chooser.showSaveDialog(Game.window().getRenderComponent());
-          if (result == JFileChooser.APPROVE_OPTION) {
-            ImageSerializer.saveImage(chooser.getSelectedFile().toString(), sprite.getImage(), format);
-            log.log(Level.INFO, "exported spritesheet {0} to {1}", new Object[] { spriteSheetInfo.getName(), chooser.getSelectedFile() });
-          }
+                int result = chooser.showSaveDialog(Game.window().getRenderComponent());
+                if (result == JFileChooser.APPROVE_OPTION) {
+                    ImageSerializer.saveImage(chooser.getSelectedFile().toString(), sprite.getImage(), format);
+                    log.log(Level.INFO, "exported spritesheet {0} to {1}", new Object[] { spriteSheetInfo.getName(), chooser.getSelectedFile() });
+                }
+                break;
+            }
+            case 2: {
+                FileFilter filter = new FileNameExtensionFilter(".json"  + " - " + "Spritesheet" + " JSON", "json");
+                chooser.setFileFilter(filter);
+                chooser.addChoosableFileFilter(filter);
+                chooser.setSelectedFile(new File(spriteSheetInfo.getName() + "." + "json"));
+
+                int result = chooser.showSaveDialog(Game.window().getRenderComponent());
+                if (result == JFileChooser.APPROVE_OPTION) {
+
+                    
+                    File newFile = XmlUtilities.save(object, chooser.getSelectedFile().toString(), extension);
+                    String dir = FileUtilities.getParentDirPath(newFile.getAbsolutePath());
+                    consumer.accept(dir);
+                    log.log(Level.INFO, "Exported {0} {1} to {2}", new Object[] { "Spritesheet", spriteSheetInfo.getName(), newFile });
+                }
+                break;
+
+            }
         }
       } catch (IOException e) {
         log.log(Level.SEVERE, e.getMessage(), e);
       }
     }
   }
+
+
 
   private void exportTileset() {
     if (!(this.getOrigin() instanceof Tileset)) {
