@@ -1,6 +1,6 @@
 package de.gurkenlabs.litiengine.graphics;
 
-import java.awt.*;
+import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.awt.image.RasterFormatException;
 import java.util.List;
