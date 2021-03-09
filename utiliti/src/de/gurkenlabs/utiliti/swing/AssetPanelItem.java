@@ -467,12 +467,15 @@ public class AssetPanelItem extends JPanel {
 
                 int result = chooser.showSaveDialog(Game.window().getRenderComponent());
                 if (result == JFileChooser.APPROVE_OPTION) {
-
-                    
-                    File newFile = XmlUtilities.save(object, chooser.getSelectedFile().toString(), extension);
-                    String dir = FileUtilities.getParentDirPath(newFile.getAbsolutePath());
-                    consumer.accept(dir);
-                    log.log(Level.INFO, "Exported {0} {1} to {2}", new Object[] { "Spritesheet", spriteSheetInfo.getName(), newFile });
+                    String fileNameWithExtension = chooser.getSelectedFile().toString();
+                    if (!fileNameWithExtension.endsWith(".json")) {
+                        fileNameWithExtension += ".json";
+                    }
+                    String json = AsepriteHandler.exportAnimation(spriteSheetInfo);
+                    try (Writer writer = new FileWriter(fileNameWithExtension)) {
+                        writer.write(json);
+                        log.log(Level.INFO, "Exported {0} {1} to {2}", new Object[] { "Spritesheet", spriteSheetInfo.getName(), fileNameWithExtension });
+                    }
                 }
                 break;
             }
